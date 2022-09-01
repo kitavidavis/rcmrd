@@ -27,7 +27,7 @@ import {
   Chip,
   SimpleGrid,
 } from '@mantine/core';
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON, useMap, useMapEvents } from 'react-leaflet'
 import wards from './assets/wards';
 import { useViewportSize } from '@mantine/hooks';
 import {
@@ -38,7 +38,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Scatter } from 'react-chartjs-2';
+import { Scatter, Line } from 'react-chartjs-2';
 import {
   NavigationProgress,
   incrementNavigationProgress,
@@ -73,41 +73,8 @@ export default function Dashboard() {
   const [anim, setAnimSpeed] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [pause, setPause] = useState(false);
-  const [lst13, setLST13] = useState(null);
-  const [lst14, setLST14] = useState(null);
-  const [lst15, setLST15] = useState(null);
-  const [lst16, setLST16] = useState(null);
-  const [lst17, setLST17] = useState(null);
-  const [lst18, setLST18] = useState(null);
-  const [lst19, setLST19] = useState(null);
-  const [lst20, setLST20] = useState(null);
-  const [lst21, setLST21] = useState(null);
-
-  const [ndvi13, setNDVI13] = useState(null);
-  const [ndvi14, setNDVI14] = useState(null); 
-  const [ndvi15, setNDVI15] = useState(null);
-  const [ndvi16, setNDVI16] = useState(null);
-  const [ndvi17, setNDVI17] = useState(null);
-  const [ndvi18, setNDVI18] = useState(null);
-  const [ndvi19, setNDVI19] = useState(null);
-  const [ndvi20, setNDVI20] = useState(null);
-  const [ndvi21, setNDVI21] = useState(null);
-
-  const [ndbi13, setNDBI13] = useState(null);
-  const [ndbi14, setNDBI14] = useState(null);
-  const [ndbi15, setNDBI15] = useState(null);
-  const [ndbi16, setNDBI16] = useState(null);
-  const [ndbi17, setNDBI17] = useState(null);
-  const [ndbi18, setNDBI18] = useState(null);
-  const [ndbi19, setNDBI19] = useState(null);
-  const [ndbi20, setNDBI20] = useState(null);
-  const [ndbi21, setNDBI21] = useState(null);
-
-  const [done, setDone] = useState(false);
-
-  const [totalNDVI, setTotalNDVI] = useState(null);
-  const [totalLST, setTotalLST] = useState(null);
-  const [totlaNDBI, setTotalNDBI] = useState(null);
+  const [center, setCenter] = useState([-1.286389, 36.817223])
+  const [zoom, setZoom] = useState(10);
 
   const [arrdata, setArrData] = useState(null);
   const [arrdata2, setArrData2] = useState(null);
@@ -116,11 +83,164 @@ export default function Dashboard() {
   let ndvi2013 = [];
   let ndb12013 = [];
 
+  const ZoomComponent = () => {
+    const mapEvents = useMapEvents({
+        zoomend: () => {
+            setZoom(mapEvents.getZoom());
+        },
+        moveend: () => {
+          let el = mapEvents.getCenter();
+          setCenter([el.lat, el.lng])
+        }
+    });
+
+
+    return null
+}
+
   const onChange = React.useCallback((arr1, arr2, yr) => {
     setArrData(arr1);
     setArrData2(arr2);
     setCurrent(yr)
   }, []);
+
+  const handleYearChange = (val) => {
+    if(val < 2013){
+      return false;
+    }
+
+    if(val > 2021){
+      return false;
+    }
+
+    let valStr = val.toString();
+    let arrdatat = [];
+    let arrdata2t = []
+
+    switch(valStr){
+      case "2013":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2013 !== null && item.properties.NDVI2013 !== null){
+      
+            arrdatat.push({x: item.properties.LST2013, y: item.properties.NDVI2013})
+            arrdata2t.push({x: item.properties.LST2013, y: item.properties.NDBI2013})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2013")
+
+        break;
+
+      case "2014":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2014 !== null && item.properties.NDVI2014 !== null){
+      
+            arrdatat.push({x: item.properties.LST2014, y: item.properties.NDVI2014})
+            arrdata2t.push({x: item.properties.LST2014, y: item.properties.NDBI2014})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2014")
+
+        break;
+
+      case "2015":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2015 !== null && item.properties.NDVI2015 !== null){
+      
+            arrdatat.push({x: item.properties.LST2015, y: item.properties.NDVI2015})
+            arrdata2t.push({x: item.properties.LST2015, y: item.properties.NDBI2015})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2015")
+
+        break;
+
+      case "2016":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2016 !== null && item.properties.NDVI2016 !== null){
+      
+            arrdatat.push({x: item.properties.LST2016, y: item.properties.NDVI2016})
+            arrdata2t.push({x: item.properties.LST2016, y: item.properties.NDBI2016})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2016")
+
+        break;
+
+      case "2017":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2017 !== null && item.properties.NDVI2017 !== null){
+      
+            arrdatat.push({x: item.properties.LST2017, y: item.properties.NDVI2017})
+            arrdata2t.push({x: item.properties.LST2017, y: item.properties.NDBI2017})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2017")
+
+        break;
+
+      case "2018":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2018 !== null && item.properties.NDVI2018 !== null){
+      
+            arrdatat.push({x: item.properties.LST2018, y: item.properties.NDVI2018})
+            arrdata2t.push({x: item.properties.LST2018, y: item.properties.NDBI2018})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2018")
+
+        break;
+
+      case "2019":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2019 !== null && item.properties.NDVI2019 !== null){
+      
+            arrdatat.push({x: item.properties.LST2019, y: item.properties.NDVI2019})
+            arrdata2t.push({x: item.properties.LST2019, y: item.properties.NDBI2019})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2019")
+
+        break;
+
+      case "2020":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2020 !== null && item.properties.NDVI2020 !== null){
+      
+            arrdatat.push({x: item.properties.LST2020, y: item.properties.NDVI2020})
+            arrdata2t.push({x: item.properties.LST2020, y: item.properties.NDBI2020})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2020")
+
+        break;
+
+      case "2021":
+        wards.features.forEach((item) => {
+          if(item.properties.LST2021 !== null && item.properties.NDVI2021 !== null){
+      
+            arrdatat.push({x: item.properties.LST2021, y: item.properties.NDVI2021})
+            arrdata2t.push({x: item.properties.LST2021, y: item.properties.NDBI2021})
+          } 
+        });
+      
+        onChange(arrdatat, arrdata2t, "2013")
+
+        break;
+
+      default:
+        // do nothing.
+    }
+
+
+  }
 
  const handle2013 = () => {
   let arrdatat = [];
@@ -301,6 +421,7 @@ React.useEffect(() => {
     datasets: [
       {
         label: 'LST against NDVI',
+        showLine: true,
         data: arrdata,
         backgroundColor: 'green',
       },
@@ -383,41 +504,41 @@ React.useEffect(() => {
 
   const onStyleNDVIColor = React.useCallback((n) => {
     if(n <= 0.2){
-      return "#d7191c"
+      return "#ffffcc"
   } else if(n <= 0.4) {
-      return "#fdae61"
+      return "#c2e699"
   } else if(n <= 0.6) {
-      return "#ffffbf"
+      return "#78c679"
   } else if(n <= 0.8){
-      return "#a6d96a"
+      return "#31a354"
   } else {
-      return "#1a9641"
+      return "#006837"
   }
   }, []);
 
   const onStyleNDBIColor = React.useCallback((p ) => {
     let n = p * 10;
     if(n <= 0){
-      return "#e66101"
+      return "#fee5d9"
   } else if(n <= 0.2) {
-      return "#fdb863"
+      return "#fcae91"
   } else if(n <= 0.4) {
-      return "#f7f7f7"
+      return "#fb6a4a"
   } else if(n <= 0.6){
-      return "#b2abd2"
+      return "#de2d26"
   } else {
-      return "#5e3c99"
+      return "#a50f15"
   }
   }, [])
 
   const MapPanel = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%'}}  center={[-1.286389, 36.817223]} zoom={10} scrollWheelZoom={false}>
+        <MapContainer style={{height: '100%', width: '100%'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
         />
-
+<ZoomComponent />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
                 return {
@@ -426,6 +547,13 @@ React.useEffect(() => {
                     fillOpacity: 1,
                     fillColor: onStyleLSTColor(feature.properties.LST2013)
                 }
+              }} onEachFeature={(f, l) => {
+                l.addEventListener('click', function(e){
+                  let el = e.target._latlngs[0][0][0];
+                  setCenter([el.lat, el.lng]);
+                  setZoom(13);
+                  l.bindPopup("<table><tr><td></td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr></table>").togglePopup();
+                })
               }}  />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -435,6 +563,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor:  onStyleLSTColor(feature.properties.LST2014)
           }
+        }}  onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2015" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -444,6 +578,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleLSTColor(feature.properties.LST2015)
           }
+        }}  onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2016" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -453,6 +593,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleLSTColor(feature.properties.LST2016)
           }
+        }}  onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2017" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -462,7 +608,13 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor:  onStyleLSTColor(feature.properties.LST2017)
           }
-        }}  />
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
+        }}   />
       ) : current === "2018" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -471,7 +623,13 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleLSTColor(feature.properties.LST2018)
           }
-        }}  />
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
+        }}   />
       ) : current === "2019" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -480,6 +638,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleLSTColor(feature.properties.LST2019)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2020" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -489,6 +653,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleLSTColor(feature.properties.LST2020)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : (
         <GeoJSON data={wards} style={(feature) => {
@@ -498,6 +668,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor:  onStyleLSTColor(feature.properties.LST2021)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       )}
       </MapContainer>
@@ -506,12 +682,12 @@ React.useEffect(() => {
 
   const NDVIMap = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%'}}  center={[-1.286389, 36.817223]} zoom={10} scrollWheelZoom={false}>
+        <MapContainer style={{height: '100%', width: '100%'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
         />
-
+<ZoomComponent />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
                 return {
@@ -520,7 +696,13 @@ React.useEffect(() => {
                     fillOpacity: 1,
                     fillColor: onStyleNDVIColor(feature.properties.NDVI2013)
                 }
-              }}  />
+              }} onEachFeature={(f, l) => {
+                l.addEventListener('click', function(e){
+                  let el = e.target._latlngs[0][0][0];
+                  setCenter([el.lat, el.lng]);
+                  setZoom(13);
+                })
+              }}   />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -528,6 +710,12 @@ React.useEffect(() => {
               opacity: 0.5,
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2014)          }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2015" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -537,7 +725,13 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2015)
           }
-        }}  />
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
+        }}   />
       ) : current === "2016" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -546,7 +740,13 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2016)
           }
-        }}  />
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
+        }}   />
       ) : current === "2017" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -555,6 +755,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2017)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2018" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -564,6 +770,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2018)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2019" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -573,6 +785,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2019)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2020" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -582,6 +800,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2020)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : (
         <GeoJSON data={wards} style={(feature) => {
@@ -591,6 +815,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2021)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       )}
       </MapContainer>
@@ -599,12 +829,12 @@ React.useEffect(() => {
 
   const NDBIMap = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%'}}  center={[-1.286389, 36.817223]} zoom={10} scrollWheelZoom={false}>
+        <MapContainer style={{height: '100%', width: '100%'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
         />
-
+<ZoomComponent />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
                 return {
@@ -613,7 +843,13 @@ React.useEffect(() => {
                     fillOpacity: 1,
                     fillColor: onStyleNDBIColor(feature.properties.NDBI2013)
                 }
-              }}  />
+              }} onEachFeature={(f, l) => {
+                l.addEventListener('click', function(e){
+                  let el = e.target._latlngs[0][0][0];
+                  setCenter([el.lat, el.lng]);
+                  setZoom(13);
+                })
+              }}   />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -621,7 +857,13 @@ React.useEffect(() => {
               opacity: 0.5,
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2014)          }
-        }}  />
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
+        }}   />
       ) : current === "2015" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -630,6 +872,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2015)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2016" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -639,6 +887,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2016)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2017" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -648,6 +902,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2017)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2018" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -657,6 +917,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2018)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : current === "2019" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -666,7 +932,13 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2019)
           }
-        }}  />
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
+        }}   />
       ) : current === "2020" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -675,6 +947,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2020)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       ) : (
         <GeoJSON data={wards} style={(feature) => {
@@ -684,6 +962,12 @@ React.useEffect(() => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2021)
           }
+        }} onEachFeature={(f, l) => {
+          l.addEventListener('click', function(e){
+            let el = e.target._latlngs[0][0][0];
+            setCenter([el.lat, el.lng]);
+            setZoom(13);
+          })
         }}  />
       )}
       </MapContainer>
@@ -740,25 +1024,28 @@ React.useEffect(() => {
           <Group>
               <Button onClick={() => {playAnimation()}} variant='outline'  color='gray' leftIcon={<Video />} >Play Changes</Button>
             <NumberInput min={0} max={10} value={anim} color='gray' onChange={(val) => {setAnimSpeed(val)}} placeholder='Animation speed' />
-            <NumberInput min={2013} value={parseInt(current)} onChange={(val) => {val < 2013 ? setCurrent("2013") : val > 2021 ? setCurrent("2021") : setCurrent(val.toString())}} max={2021} color='gray' placeholder='Year to show' />
+            <NumberInput min={2013} value={parseInt(current)} onChange={(val) => {handleYearChange(val)}} max={2021} color='gray' placeholder='Year to show' />
             </Group>
           </MediaQuery>
           </Group>
         </Header>
       }
     >
-      <Box style={{height: (height - 100) / 2, marginBottom: 2}} >
+      <Box style={{height: (height - 120) / 2, marginBottom: 2}} >
+        <Text>LST</Text>
           <MapPanel />
       </Box >
         <Grid columns={24}>
 
           <Grid.Col span={12}>
-          <Box style={{height: (height - 100) / 2}}>
+          <Box style={{height: (height - 100) / 2, marginTop: 20}}>
+            <Text>NDVI</Text>
           <NDVIMap />
             </Box>
           </Grid.Col>
           <Grid.Col style={{height: '100%'}} span={12}>
-          <Box style={{height: (height - 100) / 2}}>
+          <Box style={{height: (height - 100) / 2, marginTop: 20,}}>
+            <Text>NDBI</Text>
           <NDBIMap />
             </Box>
           </Grid.Col>
