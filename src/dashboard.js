@@ -49,6 +49,8 @@ import {
   resetNavigationProgress,
 } from '@mantine/nprogress';
 import { Video, VideoOff } from 'tabler-icons-react';
+import L from "leaflet";
+import "./legend.css";
 const { faker } = require('@faker-js/faker');
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -70,7 +72,7 @@ export default function Dashboard() {
   const [ward, setWard] = useState("");
   const [current, setCurrent] = useState("2013");
   const [type, setType] = useState("lst");
-  const [anim, setAnimSpeed] = useState(0);
+  const [anim, setAnimSpeed] = useState(1);
   const [playing, setPlaying] = useState(false);
   const [pause, setPause] = useState(false);
   const [center, setCenter] = useState([-1.286389, 36.817223])
@@ -91,12 +93,14 @@ export default function Dashboard() {
         moveend: () => {
           let el = mapEvents.getCenter();
           setCenter([el.lat, el.lng])
-        }
+        },
     });
 
 
     return null
 }
+
+
 
   const onChange = React.useCallback((arr1, arr2, yr) => {
     setArrData(arr1);
@@ -450,44 +454,7 @@ React.useEffect(() => {
     setTimeout(function(){handle2014()}, (anim * 1000));
   };
 
-  const handlePause = () => {
-    if(pause){
-      switch(current){
-        case '2013':
-          return handle2013();
-
-        case '2014':
-          return handle2014();
-
-        case '2015':
-          return handle2015();
-
-        case '2016':
-          return handle2016();
-
-        case '2017':
-          return handle2017();
-
-        case '2018':
-          return handle2018();
-
-        case '2019':
-          return handle2019();
-
-        case '2020':
-          return handle2020();
-
-        case '2021':
-          return handle2021();
-
-        default:
-          //ignore
-      }
-    }
-    setPause(!pause);
-  }
-
-  const onStyleLSTColor = React.useCallback((n) => {
+  const onStyleLSTColor = (n) => {
     if(n <= 28){
       return "#ffffb2"
   } else if(n <= 31) {
@@ -500,7 +467,60 @@ React.useEffect(() => {
       return "#bd0026"
   }
 
-  }, []);
+  };
+
+  const LSTLegend = () => {
+    const map = useMap();
+
+    const getColor = d => {
+      return d > 37
+        ? "#bd0026"
+        : d > 34
+        ? "#f03b20"
+        : d > 31
+        ? "#fd8d3c"
+        : d > 28
+        ? "#fecc5c"
+        : "#ffffb2";
+    };
+
+    React.useEffect(() => {
+      const loadLegend = () => {
+        const legend = L.control({ position: "bottomright" });
+
+        legend.onAdd = () => {
+          const div = L.DomUtil.create("div", "info legend");
+          const grades = [0, 28, 31, 34, 37];
+          let labels = [];
+          let from;
+          let to;
+    
+          for (let i = 0; i < grades.length; i++) {
+            from = grades[i];
+            to = grades[i + 1];
+    
+            labels.push(
+              '<i style="background:' +
+                getColor(from + 1) +
+                '"></i> ' +
+                from +
+                (to ? "&ndash;" + to : "+")
+            );
+          }
+    
+          div.innerHTML = labels.join("<br>");          return div;
+        };
+  
+        legend.addTo(map);
+      }
+
+      if(map){
+        loadLegend();
+      }
+    }, [map])
+
+    return null;
+  }
 
   const onStyleNDVIColor = React.useCallback((n) => {
     if(n <= 0.2){
@@ -530,6 +550,7 @@ React.useEffect(() => {
       return "#a50f15"
   }
   }, [])
+
 
   const MapPanel = () => {
     return (
@@ -1032,20 +1053,20 @@ React.useEffect(() => {
       }
     >
       <Box style={{height: (height - 120) / 2, marginBottom: 2}} >
-        <Text>LST</Text>
+        <Text>{`LST - ${current}`}</Text>
           <MapPanel />
       </Box >
         <Grid columns={24}>
 
           <Grid.Col span={12}>
           <Box style={{height: (height - 100) / 2, marginTop: 20}}>
-            <Text>NDVI</Text>
+            <Text>{`NDVI - ${current}`}</Text>
           <NDVIMap />
             </Box>
           </Grid.Col>
           <Grid.Col style={{height: '100%'}} span={12}>
           <Box style={{height: (height - 100) / 2, marginTop: 20,}}>
-            <Text>NDBI</Text>
+            <Text>{`NDBI - ${current}`}</Text>
           <NDBIMap />
             </Box>
           </Grid.Col>
