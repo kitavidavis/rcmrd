@@ -551,14 +551,100 @@ React.useEffect(() => {
   }
   }, [])
 
+  const onStyleLSTMean = (feature) => {
+    let total = (feature.properties.LST2013 + feature.properties.LST2014 + feature.properties.LST2015 + feature.properties.LST2016 + feature.properties.LST2017 +
+      feature.properties.LST2018 + feature.properties.LST2019 + feature.properties.LST2020 + feature.properties.LST2021);
+
+    let mean = total / 9;
+
+    switch(current){
+      case "2013":
+        if(feature.properties.LST2013 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2014":
+        if(feature.properties.LST2014 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2015":
+        if(feature.properties.LST2015 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2016":
+        if(feature.properties.LST2016 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2017":
+        if(feature.properties.LST2017 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2018":
+        if(feature.properties.LST2018 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2019":
+        if(feature.properties.LST2019 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2020":
+        if(feature.properties.LST2020 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      case "2021":
+        if(feature.properties.LST2021 > mean){
+          return "#D9480F"
+        } else {
+          return "gray";
+        }
+
+      default:
+        //do nothing.
+    }
+  }
+const MapMean = () => {
+    return (
+      <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={[-1.286389, 36.817223]} zoom={10} scrollWheelZoom={false}>
+
+                    <GeoJSON data={wards} style={(feature) => {
+                return {
+                    color: 'white',
+                    opacity: 0.5,
+                    fillOpacity: 1,
+                    fillColor: onStyleLSTMean(feature)
+                }
+              }}  />
+      </MapContainer>
+    )
+}
 
   const MapPanel = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-        />
+        <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
+
 <ZoomComponent />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
@@ -703,11 +789,7 @@ React.useEffect(() => {
 
   const NDVIMap = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-        />
+        <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
 <ZoomComponent />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
@@ -850,11 +932,8 @@ React.useEffect(() => {
 
   const NDBIMap = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-        />
+        <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
+
 <ZoomComponent />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
@@ -1052,20 +1131,30 @@ React.useEffect(() => {
         </Header>
       }
     >
-      <Box style={{height: (height - 120) / 2, marginBottom: 2}} >
+      <Grid columns={24}>
+        <Grid.Col span={12}>
+        <Box style={{height: (height - 130) / 2, marginBottom: 2}} >
         <Text>{`LST - ${current}`}</Text>
           <MapPanel />
       </Box >
+        </Grid.Col>
+        <Grid.Col span={12}>
+        <Box style={{height: (height - 130) / 2, marginBottom: 2}} >
+        <Text>{`LST Mean - ${current}`}</Text>
+          <MapMean />
+      </Box >
+        </Grid.Col>
+      </Grid>
         <Grid columns={24}>
 
           <Grid.Col span={12}>
-          <Box style={{height: (height - 100) / 2, marginTop: 20}}>
+          <Box style={{height: (height - 130) / 2, marginTop: 20}}>
             <Text>{`NDVI - ${current}`}</Text>
           <NDVIMap />
             </Box>
           </Grid.Col>
           <Grid.Col style={{height: '100%'}} span={12}>
-          <Box style={{height: (height - 100) / 2, marginTop: 20,}}>
+          <Box style={{height: (height - 130) / 2, marginTop: 20,}}>
             <Text>{`NDBI - ${current}`}</Text>
           <NDBIMap />
             </Box>
