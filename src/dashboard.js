@@ -26,6 +26,7 @@ import {
   Autocomplete,
   Chip,
   SimpleGrid,
+  Switch,
 } from '@mantine/core';
 import { MapContainer, TileLayer, GeoJSON, useMap, useMapEvents } from 'react-leaflet'
 import wards from './assets/wards';
@@ -81,9 +82,19 @@ export default function Dashboard() {
   const [arrdata, setArrData] = useState(null);
   const [arrdata2, setArrData2] = useState(null);
 
+  const [loop, setLoop] = useState(false);
+
   let lst2013 = [];
   let ndvi2013 = [];
   let ndb12013 = [];
+
+  const handleSwitch = (e) => {
+    if(loop){
+      window.location.reload();
+    } else {
+      setLoop(true);
+    }
+  }
 
   const ZoomComponent = () => {
     const mapEvents = useMapEvents({
@@ -94,6 +105,9 @@ export default function Dashboard() {
           let el = mapEvents.getCenter();
           setCenter([el.lat, el.lng])
         },
+        mouseover: (e) => {
+          console.log(e.target);
+        }
     });
 
 
@@ -249,10 +263,6 @@ export default function Dashboard() {
  const handle2013 = () => {
   let arrdatat = [];
   let arrdata2t = []
-  if(playing){
-    resetNavigationProgress();
-  }
-  setPlaying(false);
 
   wards.features.forEach((item) => {
     if(item.properties.LST2013 !== null && item.properties.NDVI2013 !== null){
@@ -263,6 +273,14 @@ export default function Dashboard() {
   });
 
   onChange(arrdatat, arrdata2t, "2013")
+  if(playing && !loop){
+    resetNavigationProgress();
+    setPlaying(false);
+  }
+  
+  if (playing && loop) {
+    setTimeout(function(){handle2014()}, (anim * 1000));
+  }
  }
 
  const handle2014 = () => {
@@ -484,40 +502,33 @@ React.useEffect(() => {
         : "#ffffb2";
     };
 
-    React.useEffect(() => {
-      const loadLegend = () => {
-        const legend = L.control({ position: "bottomright" });
+    const legend = L.control({ position: "bottomright" });
 
-        legend.onAdd = () => {
-          const div = L.DomUtil.create("div", "info legend");
-          const grades = [0, 28, 31, 34, 37];
-          let labels = [];
-          let from;
-          let to;
-    
-          for (let i = 0; i < grades.length; i++) {
-            from = grades[i];
-            to = grades[i + 1];
-    
-            labels.push(
-              '<i style="background:' +
-                getColor(from + 1) +
-                '"></i> ' +
-                from +
-                (to ? "&ndash;" + to : "+")
-            );
-          }
-    
-          div.innerHTML = labels.join("<br>");          return div;
-        };
-  
-        legend.addTo(map);
+    legend.onAdd = () => {
+      const div = L.DomUtil.create("div", "info legend");
+      const grades = [0, 28, 31, 34, 37];
+      let labels = [];
+      let from;
+      let to;
+
+      for (let i = 0; i < grades.length; i++) {
+        from = grades[i];
+        to = grades[i + 1];
+
+        labels.push(
+          '<span style="background:' +
+            getColor(from + 1) +
+            '"></span> ' +
+            from +
+            (to ? "&ndash;" + to : "+")
+        );
       }
 
-      if(map){
-        loadLegend();
-      }
-    }, [map])
+      div.innerHTML = labels.join("<br>");          return div;
+    };
+
+    //legend.addTo(map);
+    // there is a bug here
 
     return null;
   }
@@ -625,6 +636,99 @@ React.useEffect(() => {
         //do nothing.
     }
   }
+
+  const retrieveLST = (f) => {
+    switch(current){
+      case "2013":
+        return f.properties.LST2013.toFixed(2);
+
+      case "2014":
+        return f.properties.LST2014.toFixed(2);
+
+      case "2015":
+        return f.properties.LST2015.toFixed(2);
+
+      case "2016":
+        return f.properties.LST2016.toFixed(2);
+
+      case "2017":
+        return f.properties.LST2017.toFixed(2);
+
+      case "2018":
+        return f.properties.LST2018.toFixed(2);
+
+      case "2019":
+        return f.properties.LST2019.toFixed(2);
+
+      case "2020":
+        return f.properties.LST2020.toFixed(2);
+
+      default:
+        return f.properties.LST2021.toFixed(2);
+    }
+  }
+
+  const retrieveNDVI = (f) => {
+    switch(current){
+      case "2013":
+        return f.properties.NDVI2013.toFixed(2);
+
+      case "2014":
+        return f.properties.NDVI2014.toFixed(2);
+
+      case "2015":
+        return f.properties.NDVI2015.toFixed(2);
+
+      case "2016":
+        return f.properties.NDVI2016.toFixed(2);
+
+      case "2017":
+        return f.properties.NDVI2017.toFixed(2);
+
+      case "2018":
+        return f.properties.NDVI2018.toFixed(2);
+
+      case "2019":
+        return f.properties.NDVI2019.toFixed(2);
+
+      case "2020":
+        return f.properties.NDVI2020.toFixed(2);
+
+      default:
+        return f.properties.NDVI2021.toFixed(2);
+    }
+  }
+
+  const retrieveNDBI = (f) => {
+    switch(current){
+      case "2013":
+        return f.properties.NDBI2013.toFixed(2);
+
+      case "2014":
+        return f.properties.NDBI2014.toFixed(2);
+
+      case "2015":
+        return f.properties.NDBI2015.toFixed(2);
+
+      case "2016":
+        return f.properties.NDBI2016.toFixed(2);
+
+      case "2017":
+        return f.properties.NDBI2017.toFixed(2);
+
+      case "2018":
+        return f.properties.NDBI2018.toFixed(2);
+
+      case "2019":
+        return f.properties.NDBI2019.toFixed(2);
+
+      case "2020":
+        return f.properties.NDBI2020.toFixed(2);
+
+      default:
+        return f.properties.NDBI2021.toFixed(2);
+    }
+  }
 const MapMean = () => {
     return (
       <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={[-1.286389, 36.817223]} zoom={10} scrollWheelZoom={false}>
@@ -636,7 +740,9 @@ const MapMean = () => {
                     fillOpacity: 1,
                     fillColor: onStyleLSTMean(feature)
                 }
-              }}  />
+              }} onEachFeature={(f, l) => {
+                l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+              }}   />
       </MapContainer>
     )
 }
@@ -646,6 +752,7 @@ const MapMean = () => {
         <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={center} zoom={zoom} scrollWheelZoom={false}>
 
 <ZoomComponent />
+<LSTLegend />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
                 return {
@@ -655,13 +762,14 @@ const MapMean = () => {
                     fillColor: onStyleLSTColor(feature.properties.LST2013)
                 }
               }} onEachFeature={(f, l) => {
-                l.addEventListener('click', function(e){
+                l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+                l.addEventListener('dblclick', function(e){
                   let el = e.target._latlngs[0][0][0];
                   setCenter([el.lat, el.lng]);
                   setZoom(13);
-                  l.bindPopup("<table><tr><td></td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr></table>").togglePopup();
+                
                 })
-              }}  />
+              }}   />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
           return {
@@ -671,7 +779,8 @@ const MapMean = () => {
               fillColor:  onStyleLSTColor(feature.properties.LST2014)
           }
         }}  onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -686,7 +795,8 @@ const MapMean = () => {
               fillColor: onStyleLSTColor(feature.properties.LST2015)
           }
         }}  onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -701,7 +811,8 @@ const MapMean = () => {
               fillColor: onStyleLSTColor(feature.properties.LST2016)
           }
         }}  onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -716,7 +827,8 @@ const MapMean = () => {
               fillColor:  onStyleLSTColor(feature.properties.LST2017)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -731,7 +843,8 @@ const MapMean = () => {
               fillColor: onStyleLSTColor(feature.properties.LST2018)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -746,7 +859,8 @@ const MapMean = () => {
               fillColor: onStyleLSTColor(feature.properties.LST2019)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -761,7 +875,8 @@ const MapMean = () => {
               fillColor: onStyleLSTColor(feature.properties.LST2020)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -776,7 +891,8 @@ const MapMean = () => {
               fillColor:  onStyleLSTColor(feature.properties.LST2021)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>LST</td><td>"+retrieveLST(f)+"</td></tr></table>")
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -800,7 +916,9 @@ const MapMean = () => {
                     fillColor: onStyleNDVIColor(feature.properties.NDVI2013)
                 }
               }} onEachFeature={(f, l) => {
-                l.addEventListener('click', function(e){
+                l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+                l.addEventListener('dblclick', function(e){
                   let el = e.target._latlngs[0][0][0];
                   setCenter([el.lat, el.lng]);
                   setZoom(13);
@@ -814,7 +932,9 @@ const MapMean = () => {
               fillOpacity: 1,
               fillColor: onStyleNDVIColor(feature.properties.NDVI2014)          }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -829,7 +949,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2015)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -844,7 +966,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2016)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -859,7 +983,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2017)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -874,7 +1000,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2018)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -889,7 +1017,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2019)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -904,7 +1034,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2020)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -919,7 +1051,9 @@ const MapMean = () => {
               fillColor: onStyleNDVIColor(feature.properties.NDVI2021)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDVI</td><td>"+retrieveNDVI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -944,7 +1078,9 @@ const MapMean = () => {
                     fillColor: onStyleNDBIColor(feature.properties.NDBI2013)
                 }
               }} onEachFeature={(f, l) => {
-                l.addEventListener('click', function(e){
+                l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+                l.addEventListener('dblclick', function(e){
                   let el = e.target._latlngs[0][0][0];
                   setCenter([el.lat, el.lng]);
                   setZoom(13);
@@ -958,7 +1094,9 @@ const MapMean = () => {
               fillOpacity: 1,
               fillColor: onStyleNDBIColor(feature.properties.NDBI2014)          }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -973,7 +1111,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2015)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -988,7 +1128,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2016)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -1003,7 +1145,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2017)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -1018,7 +1162,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2018)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -1033,7 +1179,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2019)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -1048,7 +1196,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2020)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -1063,7 +1213,9 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2021)
           }
         }} onEachFeature={(f, l) => {
-          l.addEventListener('click', function(e){
+          l.bindPopup("<table><tr><td>Ward</td><td>"+f.properties.ward+"</td></tr><tr><td>Subcounty</td><td>"+f.properties.subcounty+"</td></tr><tr><td>NDBI</td><td>"+retrieveNDBI(f)+"</td></tr></table>")
+
+          l.addEventListener('dblclick', function(e){
             let el = e.target._latlngs[0][0][0];
             setCenter([el.lat, el.lng]);
             setZoom(13);
@@ -1125,6 +1277,7 @@ const MapMean = () => {
               <Button onClick={() => {playAnimation()}} variant='outline'  color='gray' leftIcon={<Video />} >Play Changes</Button>
             <NumberInput min={0} max={10} value={anim} color='gray' onChange={(val) => {setAnimSpeed(val)}} placeholder='Animation speed' />
             <NumberInput min={2013} value={parseInt(current)} onChange={(val) => {handleYearChange(val)}} max={2021} color='gray' placeholder='Year to show' />
+            <Switch label="Loop Animation" value={loop} onChange={(e) => {handleSwitch(e)}} />
             </Group>
           </MediaQuery>
           </Group>
@@ -1140,7 +1293,7 @@ const MapMean = () => {
         </Grid.Col>
         <Grid.Col span={12}>
         <Box style={{height: (height - 130) / 2, marginBottom: 2}} >
-        <Text>{`LST Mean - ${current}`}</Text>
+        <Text>{`LST Above Mean - ${current}`}</Text>
           <MapMean />
       </Box >
         </Grid.Col>
