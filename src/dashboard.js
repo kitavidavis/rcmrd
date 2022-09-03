@@ -59,7 +59,7 @@ ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 export const options = {
   scales: {
     y: {
-      beginAtZero: true,
+      beginAtZero: false,
     },
   },
 };
@@ -93,6 +93,7 @@ export default function Dashboard() {
       window.location.reload();
     } else {
       setLoop(true);
+      //setTimeout(function(){document.getElementById("play-btn").click()}, 200)
     }
   }
 
@@ -153,8 +154,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2014 !== null && item.properties.NDVI2014 !== null){
       
-            arrdatat.push({x: item.properties.LST2014, y: item.properties.NDVI2014})
-            arrdata2t.push({x: item.properties.LST2014, y: item.properties.NDBI2014})
+            arrdatat.push({y: item.properties.LST2014, x: item.properties.NDVI2014})
+            arrdata2t.push({y: item.properties.LST2014, x: item.properties.NDBI2014})
           } 
         });
       
@@ -166,8 +167,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2015 !== null && item.properties.NDVI2015 !== null){
       
-            arrdatat.push({x: item.properties.LST2015, y: item.properties.NDVI2015})
-            arrdata2t.push({x: item.properties.LST2015, y: item.properties.NDBI2015})
+            arrdatat.push({y: item.properties.LST2015, x: item.properties.NDVI2015})
+            arrdata2t.push({y: item.properties.LST2015, x: item.properties.NDBI2015})
           } 
         });
       
@@ -179,8 +180,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2016 !== null && item.properties.NDVI2016 !== null){
       
-            arrdatat.push({x: item.properties.LST2016, y: item.properties.NDVI2016})
-            arrdata2t.push({x: item.properties.LST2016, y: item.properties.NDBI2016})
+            arrdatat.push({y: item.properties.LST2016, x: item.properties.NDVI2016})
+            arrdata2t.push({y: item.properties.LST2016, x: item.properties.NDBI2016})
           } 
         });
       
@@ -192,8 +193,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2017 !== null && item.properties.NDVI2017 !== null){
       
-            arrdatat.push({x: item.properties.LST2017, y: item.properties.NDVI2017})
-            arrdata2t.push({x: item.properties.LST2017, y: item.properties.NDBI2017})
+            arrdatat.push({y: item.properties.LST2017, x: item.properties.NDVI2017})
+            arrdata2t.push({y: item.properties.LST2017, x: item.properties.NDBI2017})
           } 
         });
       
@@ -205,8 +206,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2018 !== null && item.properties.NDVI2018 !== null){
       
-            arrdatat.push({x: item.properties.LST2018, y: item.properties.NDVI2018})
-            arrdata2t.push({x: item.properties.LST2018, y: item.properties.NDBI2018})
+            arrdatat.push({y: item.properties.LST2018, x: item.properties.NDVI2018})
+            arrdata2t.push({y: item.properties.LST2018, x: item.properties.NDBI2018})
           } 
         });
       
@@ -218,8 +219,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2019 !== null && item.properties.NDVI2019 !== null){
       
-            arrdatat.push({x: item.properties.LST2019, y: item.properties.NDVI2019})
-            arrdata2t.push({x: item.properties.LST2019, y: item.properties.NDBI2019})
+            arrdatat.push({y: item.properties.LST2019, x: item.properties.NDVI2019})
+            arrdata2t.push({y: item.properties.LST2019, x: item.properties.NDBI2019})
           } 
         });
       
@@ -231,8 +232,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2020 !== null && item.properties.NDVI2020 !== null){
       
-            arrdatat.push({x: item.properties.LST2020, y: item.properties.NDVI2020})
-            arrdata2t.push({x: item.properties.LST2020, y: item.properties.NDBI2020})
+            arrdatat.push({y: item.properties.LST2020, x: item.properties.NDVI2020})
+            arrdata2t.push({y: item.properties.LST2020, x: item.properties.NDBI2020})
           } 
         });
       
@@ -244,8 +245,8 @@ export default function Dashboard() {
         wards.features.forEach((item) => {
           if(item.properties.LST2021 !== null && item.properties.NDVI2021 !== null){
       
-            arrdatat.push({x: item.properties.LST2021, y: item.properties.NDVI2021})
-            arrdata2t.push({x: item.properties.LST2021, y: item.properties.NDBI2021})
+            arrdatat.push({y: item.properties.LST2021, x: item.properties.NDVI2021})
+            arrdata2t.push({y: item.properties.LST2021, x: item.properties.NDBI2021})
           } 
         });
       
@@ -267,8 +268,8 @@ export default function Dashboard() {
   wards.features.forEach((item) => {
     if(item.properties.LST2013 !== null && item.properties.NDVI2013 !== null){
 
-      arrdatat.push({x: item.properties.LST2013, y: item.properties.NDVI2013})
-      arrdata2t.push({x: item.properties.LST2013, y: item.properties.NDBI2013})
+      arrdatat.push({y: item.properties.LST2013, x: item.properties.NDVI2013})
+      arrdata2t.push({y: item.properties.LST2013, x: item.properties.NDBI2013})
     } 
   });
 
@@ -290,8 +291,8 @@ export default function Dashboard() {
   wards.features.forEach((item) => {
     if(item.properties.LST2014 !== null && item.properties.NDVI2014 !== null){
 
-      arrdatat.push({x: item.properties.LST2014, y: item.properties.NDVI2014})
-      arrdata2t.push({x: item.properties.LST2014, y: item.properties.NDBI2014})
+      arrdatat.push({y: item.properties.LST2014, x: item.properties.NDVI2014})
+      arrdata2t.push({y: item.properties.LST2014, x: item.properties.NDBI2014})
     } 
   });
 
@@ -309,8 +310,8 @@ export default function Dashboard() {
   wards.features.forEach((item) => {
     if(item.properties.LST2015 !== null && item.properties.NDVI2015 !== null){
 
-      arrdatat.push({x: item.properties.LST2015, y: item.properties.NDVI2015})
-      arrdata2t.push({x: item.properties.LST2015, y: item.properties.NDBI2015})
+      arrdatat.push({y: item.properties.LST2015, x: item.properties.NDVI2015})
+      arrdata2t.push({y: item.properties.LST2015, x: item.properties.NDBI2015})
     } 
   });
 
@@ -328,8 +329,8 @@ if(!pause){
   wards.features.forEach((item) => {
     if(item.properties.LST2016 !== null && item.properties.NDVI2016 !== null){
 
-      arrdatat.push({x: item.properties.LST2016, y: item.properties.NDVI2016})
-      arrdata2t.push({x: item.properties.LST2016, y: item.properties.NDBI2016})
+      arrdatat.push({y: item.properties.LST2016, x: item.properties.NDVI2016})
+      arrdata2t.push({y: item.properties.LST2016, x: item.properties.NDBI2016})
     } 
   });
 
@@ -347,8 +348,8 @@ if(!pause){
   wards.features.forEach((item) => {
     if(item.properties.LST2017 !== null && item.properties.NDVI2017 !== null){
 
-      arrdatat.push({x: item.properties.LST2017, y: item.properties.NDVI2017})
-      arrdata2t.push({x: item.properties.LST2017, y: item.properties.NDBI2017})
+      arrdatat.push({y: item.properties.LST2017, x: item.properties.NDVI2017})
+      arrdata2t.push({y: item.properties.LST2017, x: item.properties.NDBI2017})
     } 
   });
 
@@ -366,8 +367,8 @@ if(!pause){
   wards.features.forEach((item) => {
     if(item.properties.LST2018 !== null && item.properties.NDVI2018 !== null){
 
-      arrdatat.push({x: item.properties.LST2018, y: item.properties.NDVI2018})
-      arrdata2t.push({x: item.properties.LST2018, y: item.properties.NDBI2018})
+      arrdatat.push({y: item.properties.LST2018, x: item.properties.NDVI2018})
+      arrdata2t.push({y: item.properties.LST2018, x: item.properties.NDBI2018})
     } 
   });
 
@@ -385,8 +386,8 @@ const handle2019 = () => {
   wards.features.forEach((item) => {
     if(item.properties.LST2019 !== null && item.properties.NDVI2019 !== null){
 
-      arrdatat.push({x: item.properties.LST2019, y: item.properties.NDVI2019})
-      arrdata2t.push({x: item.properties.LST2019, y: item.properties.NDBI2019})
+      arrdatat.push({y: item.properties.LST2019, x: item.properties.NDVI2019})
+      arrdata2t.push({y: item.properties.LST2019, x: item.properties.NDBI2019})
     } 
   });
 
@@ -404,8 +405,8 @@ const handle2020 = () => {
   wards.features.forEach((item) => {
     if(item.properties.LST2020 !== null && item.properties.NDVI2020 !== null){
 
-      arrdatat.push({x: item.properties.LST2020, y: item.properties.NDVI2020})
-      arrdata2t.push({x: item.properties.LST2020, y: item.properties.NDBI2020})
+      arrdatat.push({y: item.properties.LST2020, x: item.properties.NDVI2020})
+      arrdata2t.push({y: item.properties.LST2020, x: item.properties.NDBI2020})
     } 
   });
 
@@ -423,8 +424,8 @@ const handle2021 = () => {
   wards.features.forEach((item) => {
     if(item.properties.LST2021 !== null && item.properties.NDVI2021 !== null){
 
-      arrdatat.push({x: item.properties.LST2021, y: item.properties.NDVI2021})
-      arrdata2t.push({x: item.properties.LST2021, y: item.properties.NDBI2021})
+      arrdatat.push({y: item.properties.LST2021, x: item.properties.NDVI2021})
+      arrdata2t.push({y: item.properties.LST2021, x: item.properties.NDBI2021})
     } 
   });
 
@@ -1274,10 +1275,10 @@ const MapMean = () => {
 
           <MediaQuery smallerThan="lg" styles={{display: 'none'}}>
           <Group>
-              <Button onClick={() => {playAnimation()}} variant='outline'  color='gray' leftIcon={<Video />} >Play Changes</Button>
+              <Button onClick={() => {playAnimation()}} id="play-btn" variant='outline'  color='gray' leftIcon={<Video />} >Play Changes</Button>
             <NumberInput min={0} max={10} value={anim} color='gray' onChange={(val) => {setAnimSpeed(val)}} placeholder='Animation speed' />
             <NumberInput min={2013} value={parseInt(current)} onChange={(val) => {handleYearChange(val)}} max={2021} color='gray' placeholder='Year to show' />
-            <Switch label="Loop Animation" value={loop} onChange={(e) => {handleSwitch(e)}} />
+            <Switch label={loop ? "Cancel Loop" : "Loop Animation"} value={loop} onChange={(e) => {handleSwitch(e)}} />
             </Group>
           </MediaQuery>
           </Group>
