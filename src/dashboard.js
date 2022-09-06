@@ -84,6 +84,7 @@ export default function Dashboard() {
   const [center, setCenter] = useState([-1.286389, 36.817223])
   const [zoom, setZoom] = useState(10);
   const [lock, setLocked] = useState(true);
+  const [count, setCount] = useState(0);
 
   const [arrdata, setArrData] = useState(null);
   const [arrdata2, setArrData2] = useState(null);
@@ -314,12 +315,8 @@ React.useEffect(() => {
   });
 
   onChange(arrdatat, arrdata2t, "2013")
-  if(playing && !loop){
-    resetNavigationProgress();
-    setPlaying(false);
-  }
   
-  if (playing && loop) {
+  if (!pause && playing) {
     setTimeout(function(){handle2014()}, (anim * 1000));
   }
  }
@@ -507,7 +504,7 @@ React.useEffect(() => {
       {
         label: 'Mean LST',
         data: arrdata3,
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        backgroundColor: '#FF4500',
       },
     ],
   };
@@ -520,6 +517,7 @@ React.useEffect(() => {
 
   const playAnimation = () => {
     setPlaying(true);
+    setCount(count => count + 1);
     incrementNavigationProgress(10);
     setTimeout(function(){handle2014()}, (anim * 1000));
   };
@@ -615,70 +613,65 @@ React.useEffect(() => {
   }, [])
 
   const onStyleLSTMean = (feature) => {
-    let total = (feature.properties.LST2013 + feature.properties.LST2014 + feature.properties.LST2015 + feature.properties.LST2016 + feature.properties.LST2017 +
-      feature.properties.LST2018 + feature.properties.LST2019 + feature.properties.LST2020 + feature.properties.LST2021);
-
-    let mean = total / 9;
-
     switch(current){
       case "2013":
-        if(feature.properties.LST2013 > mean){
+        if(feature.properties.LST2013 > arrdata3[0]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2014":
-        if(feature.properties.LST2014 > mean){
+        if(feature.properties.LST2014 > arrdata3[1]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2015":
-        if(feature.properties.LST2015 > mean){
+        if(feature.properties.LST2015 > arrdata3[2]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2016":
-        if(feature.properties.LST2016 > mean){
+        if(feature.properties.LST2016 > arrdata3[3]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2017":
-        if(feature.properties.LST2017 > mean){
+        if(feature.properties.LST2017 > arrdata3[4]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2018":
-        if(feature.properties.LST2018 > mean){
+        if(feature.properties.LST2018 > arrdata3[5]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2019":
-        if(feature.properties.LST2019 > mean){
+        if(feature.properties.LST2019 > arrdata3[6]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2020":
-        if(feature.properties.LST2020 > mean){
+        if(feature.properties.LST2020 > arrdata3[7]){
           return "#D9480F"
         } else {
           return "gray";
         }
 
       case "2021":
-        if(feature.properties.LST2021 > mean){
+        if(feature.properties.LST2021 > arrdata3[8]){
           return "#D9480F"
         } else {
           return "gray";
@@ -807,7 +800,7 @@ const MapMean = () => {
     return (
         <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={lock ? [-1.286389, 36.817223] : center} zoom={lock ? 10 : zoom} scrollWheelZoom={false}>
 
-<ZoomComponent />
+{!lock ? <ZoomComponent /> : null}
 <LSTLegend />
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
@@ -819,12 +812,14 @@ const MapMean = () => {
                 }
               }} onEachFeature={(f, l) => {
                 l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-                l.addEventListener('dblclick', function(e){
-                  let el = e.target._latlngs[0][0][0];
-                  setCenter([el.lat, el.lng]);
-                  setZoom(13);
-                
-                })
+                if(!lock){
+                  l.addEventListener('dblclick', function(e){
+                    let el = e.target._latlngs[0][0][0];
+                    setCenter([el.lat, el.lng]);
+                    setZoom(13);
+                  
+                  })
+                }
               }}   />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -836,11 +831,13 @@ const MapMean = () => {
           }
         }}  onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2015" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -852,11 +849,13 @@ const MapMean = () => {
           }
         }}  onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2016" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -868,11 +867,13 @@ const MapMean = () => {
           }
         }}  onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2017" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -884,11 +885,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}   />
       ) : current === "2018" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -900,11 +903,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}   />
       ) : current === "2019" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -916,11 +921,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2020" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -932,11 +939,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : (
         <GeoJSON data={wards} style={(feature) => {
@@ -948,11 +957,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>LST2013</strong></td><td>"+retrieveLST(f, "2013")+"</td></tr><tr><td><strong>LST2014</strong></td><td>"+retrieveLST(f, "2014")+"</td></tr><tr><td><strong>LST2015</strong></td><td>"+retrieveLST(f, "2015")+"</td></tr><tr><td><strong>LST2016</strong></td><td>"+retrieveLST(f, "2016")+"</td></tr><tr><td><strong>LST2017</strong></td><td>"+retrieveLST(f, "2017")+"</td></tr><tr><td><strong>LST2018</strong></td><td>"+retrieveLST(f, "2018")+"</td></tr><tr><td><strong>LST2019</strong></td><td>"+retrieveLST(f, "2019")+"</td></tr><tr><td><strong>LST2020</strong></td><td>"+retrieveLST(f, "2020")+"</td></tr><tr><td><strong>LST2021</strong></td><td>"+retrieveLST(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       )}
       </MapContainer>
@@ -962,7 +973,7 @@ const MapMean = () => {
   const NDVIMap = () => {
     return (
         <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={lock ? [-1.286389, 36.817223] : center} zoom={lock ? 10 : zoom} scrollWheelZoom={false}>
-<ZoomComponent />
+{!lock ? <ZoomComponent /> : null}
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
                 return {
@@ -974,11 +985,13 @@ const MapMean = () => {
               }} onEachFeature={(f, l) => {
                 l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-                l.addEventListener('dblclick', function(e){
-                  let el = e.target._latlngs[0][0][0];
-                  setCenter([el.lat, el.lng]);
-                  setZoom(13);
-                })
+                if(!lock){
+                  l.addEventListener('dblclick', function(e){
+                    let el = e.target._latlngs[0][0][0];
+                    setCenter([el.lat, el.lng]);
+                    setZoom(13);
+                  })
+                }
               }}   />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -990,11 +1003,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2015" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1007,11 +1022,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}   />
       ) : current === "2016" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1024,11 +1041,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}   />
       ) : current === "2017" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1041,11 +1060,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2018" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1058,11 +1079,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2019" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1075,11 +1098,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2020" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1092,11 +1117,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : (
         <GeoJSON data={wards} style={(feature) => {
@@ -1109,11 +1136,13 @@ const MapMean = () => {
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDVI2013</strong></td><td>"+retrieveNDVI(f, "2013")+"</td></tr><tr><td><strong>NDVI2014</strong></td><td>"+retrieveNDVI(f, "2014")+"</td></tr><tr><td><strong>NDVI2015</strong></td><td>"+retrieveNDVI(f, "2015")+"</td></tr><tr><td><strong>NDVI2016</strong></td><td>"+retrieveNDVI(f, "2016")+"</td></tr><tr><td><strong>NDVI2017</strong></td><td>"+retrieveNDVI(f, "2017")+"</td></tr><tr><td><strong>NDVI2018</strong></td><td>"+retrieveNDVI(f, "2018")+"</td></tr><tr><td><strong>NDVI2019</strong></td><td>"+retrieveNDVI(f, "2019")+"</td></tr><tr><td><strong>NDVI2020</strong></td><td>"+retrieveNDVI(f, "2020")+"</td></tr><tr><td><strong>NDVI2021</strong></td><td>"+retrieveNDVI(f, "2021")+"</td></tr></table></div>")
 
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       )}
       </MapContainer>
@@ -1122,9 +1151,9 @@ const MapMean = () => {
 
   const NDBIMap = () => {
     return (
-        <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={lock ? [-1.286389, 36.817223] : center} zoom={lock ? 10 : zoom} scrollWheelZoom={false}>
+        <MapContainer style={{height: '100%', width: '100%', backgroundColor: '#101113'}}  center={lock ? [-1.286389, 36.817223] : center} zoom={lock ? 10 : zoom} scrollWheelZoom={true}>
 
-<ZoomComponent />
+{!lock ? <ZoomComponent /> : null}
       {current === "2013" ? (
               <GeoJSON data={wards} style={(feature) => {
                 return {
@@ -1136,11 +1165,13 @@ const MapMean = () => {
               }} onEachFeature={(f, l) => {
                 l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
 
-                l.addEventListener('dblclick', function(e){
-                  let el = e.target._latlngs[0][0][0];
-                  setCenter([el.lat, el.lng]);
-                  setZoom(13);
-                })
+                if(!lock){
+                  l.addEventListener('dblclick', function(e){
+                    let el = e.target._latlngs[0][0][0];
+                    setCenter([el.lat, el.lng]);
+                    setZoom(13);
+                  })
+                }
               }}   />
       ) : current === "2014" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1151,11 +1182,13 @@ const MapMean = () => {
               fillColor: onStyleNDBIColor(feature.properties.NDBI2014)          }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}   />
       ) : current === "2015" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1167,11 +1200,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2016" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1183,11 +1218,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2017" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1199,11 +1236,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2018" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1215,11 +1254,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : current === "2019" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1231,11 +1272,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}   />
       ) : current === "2020" ? (
         <GeoJSON data={wards} style={(feature) => {
@@ -1247,11 +1290,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       ) : (
         <GeoJSON data={wards} style={(feature) => {
@@ -1263,11 +1308,13 @@ const MapMean = () => {
           }
         }} onEachFeature={(f, l) => {
           l.bindPopup("<div style='height: 150px; overflow-y: auto'> <table class='table table-stripped'><tr><td><strong>ward</strong></td><td>"+f.properties.ward+"</td></tr><tr><td><strong>Subcounty</strong></td><td>"+f.properties.subcounty+"</td></tr><tr><td><strong>NDBI2013</strong></td><td>"+retrieveNDBI(f, "2013")+"</td></tr><tr><td><strong>NDBI2014</strong></td><td>"+retrieveNDBI(f, "2014")+"</td></tr><tr><td><strong>NDBI2015</strong></td><td>"+retrieveNDBI(f, "2015")+"</td></tr><tr><td><strong>NDBI2016</strong></td><td>"+retrieveNDBI(f, "2016")+"</td></tr><tr><td><strong>NDBI2017</strong></td><td>"+retrieveNDBI(f, "2017")+"</td></tr><tr><td><strong>NDBI2018</strong></td><td>"+retrieveNDBI(f, "2018")+"</td></tr><tr><td><strong>NDBI2019</strong></td><td>"+retrieveNDBI(f, "2019")+"</td></tr><tr><td><strong>NDBI2020</strong></td><td>"+retrieveNDBI(f, "2020")+"</td></tr><tr><td><strong>NDBI2021</strong></td><td>"+retrieveNDBI(f, "2021")+"</td></tr></table></div>")
-          l.addEventListener('dblclick', function(e){
-            let el = e.target._latlngs[0][0][0];
-            setCenter([el.lat, el.lng]);
-            setZoom(13);
-          })
+          if(!lock){
+            l.addEventListener('dblclick', function(e){
+              let el = e.target._latlngs[0][0][0];
+              setCenter([el.lat, el.lng]);
+              setZoom(13);
+            })
+          }
         }}  />
       )}
       </MapContainer>
