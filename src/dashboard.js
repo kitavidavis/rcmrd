@@ -35,9 +35,9 @@ import {
   Chart as ChartJS,
   LinearScale,
   PointElement,
-  LineElement,
   Tooltip,
   Legend,
+  LineElement,
   BarElement,
   CategoryScale,
 } from 'chart.js';
@@ -481,7 +481,6 @@ React.useEffect(() => {
     datasets: [
       {
         label: 'LST against NDVI',
-        showLine: true,
         data: arrdata,
         backgroundColor: 'green',
       },
